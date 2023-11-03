@@ -1,0 +1,153 @@
+package com.example.tacocloudapplication.controller;
+
+import com.example.tacocloudapplication.repo.impl.IngredientRepository;
+import com.example.tacocloudapplication.repo.impl.TacoRepository;
+import com.example.tacocloudapplication.repo.impl.UserRepository;
+import com.example.tacocloudapplication.table.Ingredient;
+import com.example.tacocloudapplication.table.Ingredient.Type;
+import com.example.tacocloudapplication.table.Taco;
+import com.example.tacocloudapplication.table.TacoOrder;
+import com.example.tacocloudapplication.table.User;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.*;
+
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.validation.Valid;
+import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+@Slf4j
+@RestController
+@RequestMapping("/design")
+@SessionAttributes("tacoOrder")
+@CrossOrigin(origins = "http://localhost:4200")
+public class DesignTacoController {
+
+    private final IngredientRepository ingredientRepository;
+
+    private final TacoRepository tacoRepository;
+
+    private final UserRepository userRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+    @Autowired
+    public DesignTacoController(IngredientRepository ingredientRepository, TacoRepository tacoRepository,
+                                UserRepository userRepository, EntityManager entityManager) {
+        this.ingredientRepository = ingredientRepository;
+        this.tacoRepository = tacoRepository;
+        this.userRepository = userRepository;
+        this.entityManager = entityManager;
+    }
+
+    @GetMapping("/taco")
+    public ResponseEntity<Map<Type, List<Ingredient>>> getIngredientsGroupedByType() {
+        List<Ingredient> ingredients = ingredientRepository.findAll();
+
+        if (ingredients.isEmpty()) {
+            return ResponseEntity.noContent().build();
+        }
+
+        Map<Type, List<Ingredient>> groupedIngredients = ingredients.stream()
+                .collect(Collectors.groupingBy(Ingredient::getType));
+
+        return ResponseEntity.ok(groupedIngredients);
+    }
+
+
+    @PostMapping("/taco")
+    @Transactional
+    public ResponseEntity<Taco> createTacoFromIngredients(@Valid @RequestBody Taco taco,
+                                                          Principal principal) {
+        if (taco == null) {
+            return ResponseEntity.badRequest().build();
+        }
+
+        User currentUser = userRepository.findByUsername(principal.getName());
+
+        taco.setCreatedByUserId(currentUser.getId());
+
+        for (int i = 0; i < taco.getIngredients().size(); i++) {
+            Ingredient ingredient = taco.getIngredients().get(i);
+            Ingredient managedIngredient = ingredientRepository.findById(ingredient.getId()).orElse(null);
+            if (managedIngredient != null) {
+                taco.getIngredients().set(i, managedIngredient);
+                managedIngredient.addTaco(taco);
+            }
+        }
+
+        log.info("The following taco has been created: " + taco);
+
+        Taco savedTaco = tacoRepository.save(taco);
+        entityManager.flush();
+        entityManager.clear();
+
+        log.info("Processed and saved taco: {}", savedTaco);
+
+        return ResponseEntity.ok(savedTaco);
+    }
+
+    @GetMapping("/emptyTaco")
+    public ResponseEntity<Taco> getTaco() {
+        return ResponseEntity.ok(new Taco());
+    }
+}
+
+//    @ModelAttribute
+//    public void addIngredientsToModel(Model model) {
+//        List<Ingredient> ingredients = ingredientRepository.findAll();
+//
+//        Type[] types = Ingredient.Type.values();
+//
+//        for(Type type : types) {
+//            model.addAttribute(type.toString().toLowerCase(),
+//                    filterByType(ingredients, type));
+//        }
+//    }
+//
+//    @ModelAttribute(name = "tacoOrder")
+//    public TacoOrder order() {
+//        return new TacoOrder();
+//    }
+//
+//    @ModelAttribute(name = "taco")
+//    public Taco taco() {
+//        return new Taco();
+//    }
+//
+//    @GetMapping
+//    public String showDesignForm() {
+//        return "design";
+//    }
+//
+//    @PostMapping
+//    public String processTaco(@Valid Taco taco, Errors errors, @ModelAttribute TacoOrder tacoOrder) {
+//        if(errors.hasErrors()) {
+//            return "design";
+//        }
+//
+//        tacoOrder.addTaco(taco);
+//        log.info("Processing taco: {}", taco);
+//
+//        return "redirect:/orders/current";
+//    }
+//
+//    private Iterable<Ingredient> filterByType(
+//            List<Ingredient> ingredients, Type type) {
+//        return ingredients
+//                .stream()
+//                .filter(x -> x.getType().equals(type))
+//                .collect(Collectors.toList());
+//    }
+
