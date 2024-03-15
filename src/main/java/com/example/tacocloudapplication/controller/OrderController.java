@@ -74,6 +74,7 @@ public class OrderController {
     @Transactional
     public ResponseEntity<TacoOrder> processOrder(@RequestBody TacoOrder order, Principal principal) {
         User user = userRepository.findByUsername(principal.getName());
+        float tacoPriceSum = 0;
 
         if(user == null) {
             return ResponseEntity.badRequest().body(null);
@@ -83,6 +84,12 @@ public class OrderController {
         user.getTacoOrders().add(order);
 
         log.info("Order submitted: {}", order);
+
+        for(Taco taco : order.getTacos()) {
+            tacoPriceSum += taco.getTotalTacoPrice();
+        }
+
+        order.setTotalOrderPrice(tacoPriceSum);
 
         TacoOrder savedOrder = orderRepository.save(order);
 

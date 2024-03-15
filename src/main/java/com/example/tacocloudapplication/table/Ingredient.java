@@ -20,6 +20,8 @@ public class Ingredient {
 
     private final Type type;
 
+    private final float price;
+
     @JsonIgnore
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(joinColumns = @JoinColumn(name = "ingredient_id"),
@@ -40,6 +42,8 @@ public class Ingredient {
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", type=" + type +
+                ", price=" + price +
+                ", tacos=" + tacos +
                 '}';
     }
 }

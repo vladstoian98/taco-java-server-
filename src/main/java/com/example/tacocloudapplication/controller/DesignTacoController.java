@@ -80,6 +80,7 @@ public class DesignTacoController {
 
         for (int i = 0; i < taco.getIngredients().size(); i++) {
             Ingredient ingredient = taco.getIngredients().get(i);
+            taco.setTotalTacoPrice(taco.getTotalTacoPrice() + ingredient.getPrice());
             Ingredient managedIngredient = ingredientRepository.findById(ingredient.getId()).orElse(null);
             if (managedIngredient != null) {
                 taco.getIngredients().set(i, managedIngredient);
@@ -87,13 +88,9 @@ public class DesignTacoController {
             }
         }
 
-        log.info("The following taco has been created: " + taco);
-
         Taco savedTaco = tacoRepository.save(taco);
         entityManager.flush();
         entityManager.clear();
-
-        log.info("Processed and saved taco: {}", savedTaco);
 
         return ResponseEntity.ok(savedTaco);
     }

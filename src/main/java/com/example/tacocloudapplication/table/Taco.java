@@ -24,6 +24,8 @@ public class Taco {
     @Size(min = 2, message = "Name must be at least 2 characters long")
     private String name;
 
+    @NotNull
+    private float totalTacoPrice = 0;
 
     @Size(min = 1, message = "You must choose at least 1 ingredient")
     @ManyToMany(mappedBy = "tacos", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -36,16 +38,4 @@ public class Taco {
 
     @Column(name = "created_by_user_id")
     private Long createdByUserId;
-
-    @Override
-    public String toString() {
-        return "Taco{" +
-                "id=" + id +
-                ", createdAt=" + createdAt +
-                ", name='" + name + '\'' +
-                ", ingredients=" + ingredients +
-                ", tacoOrder=" + tacoOrder +
-                ", createdByUserId=" + createdByUserId +
-                '}';
-    }
 }
