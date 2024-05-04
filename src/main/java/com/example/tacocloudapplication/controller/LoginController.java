@@ -1,10 +1,14 @@
 package com.example.tacocloudapplication.controller;
 
+import com.example.tacocloudapplication.repo.impl.TacoRepository;
+import com.example.tacocloudapplication.service.TacoService;
 import com.example.tacocloudapplication.service.TokenBlacklistService;
+import com.example.tacocloudapplication.table.Taco;
 import com.example.tacocloudapplication.table.util.AuthenticationRequest;
 import com.example.tacocloudapplication.table.util.AuthenticationResponse;
 import com.example.tacocloudapplication.table.util.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -12,7 +16,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -28,11 +36,14 @@ public class LoginController {
 
     private TokenBlacklistService tokenBlacklistService;
 
-    public LoginController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService, TokenBlacklistService tokenBlacklistService) {
+    private TacoService tacoService;
+
+    public LoginController(AuthenticationManager authenticationManager, JwtUtil jwtUtil, UserDetailsService userDetailsService, TokenBlacklistService tokenBlacklistService, TacoService tacoService) {
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.userDetailsService = userDetailsService;
         this.tokenBlacklistService = tokenBlacklistService;
+        this.tacoService = tacoService;
     }
 
     @PostMapping("/login")
@@ -69,6 +80,14 @@ public class LoginController {
         return ResponseEntity.ok(new HashMap<String, String>() {{
             put("message", "Logged out successfully");
         }});
+    }
+
+    @DeleteMapping("/deleteTacosWithoutOrder")
+    @Transactional
+    public ResponseEntity<Void> deleteTacosWithoutOrder() {
+        tacoService.deleteTacosWithoutOrder();
+
+        return ResponseEntity.noContent().build();
     }
 
 }

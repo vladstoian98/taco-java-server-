@@ -41,16 +41,6 @@ public class TacoOrder implements Serializable {
     @NotBlank(message = "Zip code is required")
     private String deliveryZip;
 
-    @CreditCardNumber(message = "Not a valid credit card number")
-    private String ccNumber;
-
-    @Pattern(regexp="^(0[1-9]|1[0-2])([\\/])([2-9][0-9])$",
-            message="Must be formatted MM/YY")
-    private String ccExpiration;
-
-    @Digits(integer = 3, fraction = 0, message = "Invalid CVV")
-    private String ccCVV;
-
     private float totalOrderPrice = 0;
 
     @OneToMany(mappedBy = "tacoOrder")
@@ -61,6 +51,10 @@ public class TacoOrder implements Serializable {
     @JoinColumn(name = "user_id")
     private User user;
 
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name = "drink_id"))
+    private List<Drink> drinks = new ArrayList<>();
 
     public void addTaco(Taco taco) {
         tacos.add(taco);

@@ -4,6 +4,8 @@ import com.example.tacocloudapplication.props.OrderProps;
 import com.example.tacocloudapplication.repo.impl.OrderRepository;
 import com.example.tacocloudapplication.repo.impl.TacoRepository;
 import com.example.tacocloudapplication.repo.impl.UserRepository;
+import com.example.tacocloudapplication.service.TacoService;
+import com.example.tacocloudapplication.table.Drink;
 import com.example.tacocloudapplication.table.Taco;
 import com.example.tacocloudapplication.table.TacoOrder;
 import com.example.tacocloudapplication.table.User;
@@ -27,18 +29,21 @@ public class OrderController {
 
     private final OrderRepository orderRepository;
 
+    private final TacoService tacoService;
+
     private final TacoRepository tacoRepository;
 
     private final UserRepository userRepository;
 
     private final OrderProps orderProps;
 
-    public OrderController(OrderRepository orderRepository, TacoRepository tacoRepository,
-                           UserRepository userRepository, OrderProps orderProps) {
+    public OrderController(OrderRepository orderRepository, TacoService tacoService,
+                           UserRepository userRepository, OrderProps orderProps, TacoRepository tacoRepository) {
         this.orderRepository = orderRepository;
-        this.tacoRepository = tacoRepository;
+        this.tacoService = tacoService;
         this.userRepository = userRepository;
         this.orderProps = orderProps;
+        this.tacoRepository = tacoRepository;
     }
 
     @GetMapping("/{orderId}")
@@ -73,8 +78,8 @@ public class OrderController {
     @PostMapping("/new")
     @Transactional
     public ResponseEntity<TacoOrder> processOrder(@RequestBody TacoOrder order, Principal principal) {
-        User user = userRepository.findByUsername(principal.getName());
-        float tacoPriceSum = 0;
+            User user = userRepository.findByUsername(principal.getName());
+        float orderTotalPrice = 0;
 
         if(user == null) {
             return ResponseEntity.badRequest().body(null);
@@ -86,10 +91,14 @@ public class OrderController {
         log.info("Order submitted: {}", order);
 
         for(Taco taco : order.getTacos()) {
-            tacoPriceSum += taco.getTotalTacoPrice();
+            orderTotalPrice += taco.getTotalTacoPrice();
         }
 
-        order.setTotalOrderPrice(tacoPriceSum);
+        for(Drink drink : order.getDrinks()) {
+            orderTotalPrice += drink.getPrice();
+        }
+
+        order.setTotalOrderPrice(orderTotalPrice);
 
         TacoOrder savedOrder = orderRepository.save(order);
 
@@ -120,7 +129,7 @@ public class OrderController {
     @DeleteMapping("/delete/taco/{tacoId}")
     @Transactional
     public ResponseEntity<Integer> deleteSelectedTacoFromDatabase(@PathVariable Long tacoId) {
-        tacoRepository.deleteEntriesFromIngredientTaco(tacoId);
+        tacoService.deleteSelectedTacoFromDatabase(tacoId);
 
         return ResponseEntity.ok(tacoRepository.deleteTacoById(tacoId));
     }

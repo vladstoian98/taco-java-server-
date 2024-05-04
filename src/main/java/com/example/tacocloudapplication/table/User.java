@@ -26,9 +26,12 @@ public class User implements org.springframework.security.core.userdetails.UserD
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @Column(unique = true)
     private final String username;
 
     private final String password;
+
+    private final String authority;
 
     private final String fullname;
 
@@ -45,9 +48,21 @@ public class User implements org.springframework.security.core.userdetails.UserD
     @OneToMany(mappedBy = "user")
     private List<TacoOrder> tacoOrders = new ArrayList<>();
 
+    public User(String username, String password, String fullname, String street, String city, String state, String zip, String phoneNumber) {
+        this.username = username;
+        this.password = password;
+        this.authority = "customer";
+        this.fullname = fullname;
+        this.street = street;
+        this.city = city;
+        this.state = state;
+        this.zip = zip;
+        this.phoneNumber = phoneNumber;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"));
+        return Arrays.asList(new SimpleGrantedAuthority(authority));
     }
 
     @Override

@@ -21,4 +21,12 @@ public interface TacoRepository extends JpaRepository<Taco, Long> {
     @Modifying
     @Query(value = "UPDATE taco SET taco_order_id = :orderId WHERE id = :tacoId", nativeQuery = true)
     void associateOrderToTaco(@Param("orderId") Long orderId, @Param("tacoId") Long tacoId);
+
+    @Modifying
+    @Query(value = "delete from ingredient_tacos it where it.taco_id in (select id from taco t where t.taco_order_id is null) ", nativeQuery = true)
+    void deleteOrderlessTacosEntitiesFromIngredientTacosTable();
+
+    @Modifying
+    @Query(value = "delete from taco t where t.taco_order_id is null ", nativeQuery = true)
+    void deleteOrderlessTacoFromTacoTable();
 }

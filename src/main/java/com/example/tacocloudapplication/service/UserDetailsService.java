@@ -4,6 +4,7 @@ import com.example.tacocloudapplication.repo.impl.UserRepository;
 import com.example.tacocloudapplication.table.User;
 import com.example.tacocloudapplication.table.util.JwtUtil;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -32,7 +33,7 @@ public class UserDetailsService implements org.springframework.security.core.use
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-//        authorities.add(new SimpleGrantedAuthority("ROLE_USER"));
+        authorities.add(new SimpleGrantedAuthority(user.getAuthority()));
 
         return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), authorities);
     }
