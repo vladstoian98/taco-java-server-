@@ -39,46 +39,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/design/taco", "/orders/**", "/api/tacos/**",
                         "/api/deleteTacosWithoutOrder", "/drinks/**", "stripe/**",
                         "/change/**").authenticated()
+                .antMatchers("/admin/users/**").hasAuthority("admin")
                 .antMatchers("/", "/**", "/api/login").access("permitAll()")
                 .and()
-//                .formLogin()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/", true)
-//                .and()
-//                .oauth2Login()
-//                .loginPage("/login")
-//                .defaultSuccessUrl("/", true)
-//                .and()
                 .logout()
                 .logoutSuccessUrl("/");
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+        http.addFilterAfter(new SecurityContextDebugFilter(), JwtAuthenticationFilter.class); // Add this line
     }
-
-//    @Bean
-//    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-//        return httpSecurity
-//                .authorizeRequests()
-//                    .antMatchers("/design", "/orders/**").access("hasAuthority('ROLE_USER')")
-//                    .antMatchers("/", "/**").access("permitAll()")
-//
-//                .and()
-//                    .formLogin()
-//                        .loginPage("/login")
-//                        .defaultSuccessUrl("/", true)
-//
-//                .and()
-//                    .oauth2Login()
-//                        .loginPage("/login")
-//                        .defaultSuccessUrl("/", true)
-//
-//                .and()
-//                    .logout()
-//                        .logoutSuccessUrl("/")
-//
-//                .and()
-//                .build();
-//    }
 
     @Autowired
     public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {

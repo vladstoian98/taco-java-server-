@@ -41,7 +41,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             username = jwtUtil.extractUsername(jwt);
         }
 
-        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && !tokenBlacklistService.isTokenBlacklisted(jwt)) {
+//        if (username != null && SecurityContextHolder.getContext().getAuthentication() == null && !tokenBlacklistService.isTokenBlacklisted(jwt)) {
+        if (username != null && !tokenBlacklistService.isTokenBlacklisted(jwt)) {
             // Only proceed if the token is not blacklisted
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
@@ -51,8 +52,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken
                         .setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+
+                // Debug statements
+                System.out.println("Authenticated user: " + username);
+                System.out.println("Authorities: " + userDetails.getAuthorities());
+            } else {
+                System.out.println("Invalid JWT token for user: " + username);
             }
+        } else {
+            System.out.println("JWT token is null or already authenticated or blacklisted");
         }
+
         filterChain.doFilter(request, response);
     }
 }

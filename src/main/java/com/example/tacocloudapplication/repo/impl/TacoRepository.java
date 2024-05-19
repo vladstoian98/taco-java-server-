@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 public interface TacoRepository extends JpaRepository<Taco, Long> {
@@ -14,6 +15,7 @@ public interface TacoRepository extends JpaRepository<Taco, Long> {
 
     Integer deleteTacoById(Long tacoId);
 
+    @Transactional
     @Modifying
     @Query(value = "DELETE FROM ingredient_tacos WHERE taco_id = :tacoId", nativeQuery = true)
     void deleteEntriesFromIngredientTaco(@Param("tacoId") Long tacoId);
@@ -29,4 +31,18 @@ public interface TacoRepository extends JpaRepository<Taco, Long> {
     @Modifying
     @Query(value = "delete from taco t where t.taco_order_id is null ", nativeQuery = true)
     void deleteOrderlessTacoFromTacoTable();
+
+    @Transactional
+    @Query(value = "select * from taco where taco_order_id = :orderId", nativeQuery = true)
+    List<Taco> selectTacosByOrderId(@Param("orderId") long orderId);
+
+//    @Modifying
+//    @Query(value = "delete from ingredient_tacos where taco_id = :tacoId", nativeQuery = true)
+//    void deleteFromIngredientTacosByIngredientId(@Param("tacoId") long tacoId);
+
+    @Transactional
+    @Modifying
+    @Query(value = "DELETE FROM taco WHERE taco_order_id = :orderId", nativeQuery = true)
+    void deleteEntriesFromTacoByOrderId(@Param("orderId") Long orderId);
+
 }
