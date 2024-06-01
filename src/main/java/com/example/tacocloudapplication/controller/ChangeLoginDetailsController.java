@@ -21,7 +21,7 @@ public class ChangeLoginDetailsController {
         this.changeLoginDetailsService = changeLoginDetailsService;
     }
 
-    @PostMapping("/username")
+    @PatchMapping("/username")
     public ResponseEntity<Map<String, String>> changeUsername(@RequestBody ChangeUsernameDetailsDTO changeUsernameDetails) {
         int numberOfChangedRows = changeLoginDetailsService.changeUsername(changeUsernameDetails);
 
@@ -32,7 +32,7 @@ public class ChangeLoginDetailsController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/password")
+    @PatchMapping("/password")
     public ResponseEntity<Map<String, String>> changePassword(@RequestBody ChangePasswordDetailsDTO changePasswordDetailsDTO) {
         int numberOfChangedRows = changeLoginDetailsService.changePassword(changePasswordDetailsDTO);
 
