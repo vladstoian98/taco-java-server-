@@ -36,10 +36,6 @@ public interface TacoRepository extends JpaRepository<Taco, Long> {
     @Query(value = "select * from taco where taco_order_id = :orderId", nativeQuery = true)
     List<Taco> selectTacosByOrderId(@Param("orderId") long orderId);
 
-//    @Modifying
-//    @Query(value = "delete from ingredient_tacos where taco_id = :tacoId", nativeQuery = true)
-//    void deleteFromIngredientTacosByIngredientId(@Param("tacoId") long tacoId);
-
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM taco WHERE taco_order_id = :orderId", nativeQuery = true)

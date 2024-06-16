@@ -46,7 +46,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .logoutSuccessUrl("/");
 
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
-        http.addFilterAfter(new SecurityContextDebugFilter(), JwtAuthenticationFilter.class); // Add this line
+        http.addFilterAfter(new SecurityContextDebugFilter(), JwtAuthenticationFilter.class);
     }
 
     @Autowired

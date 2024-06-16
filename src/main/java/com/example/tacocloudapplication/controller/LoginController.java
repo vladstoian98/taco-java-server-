@@ -69,7 +69,6 @@ public class LoginController {
         if (isValidToken) {
             return ResponseEntity.ok(new AuthenticationResponse(jwt));
         } else {
-            // Handle token validation failure
             throw new Exception("Token validation failed");
         }
     }

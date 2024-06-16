@@ -28,12 +28,10 @@ public class PaymentService {
         } catch (StripeException e) {
             System.err.println("Stripe exception occurred: " + e.getMessage());
             e.printStackTrace();
-            // Consider logging the exception or handling it as needed
             throw new RuntimeException("Failed to create payment intent due to Stripe API error", e);
         } catch (Exception e) {
             System.err.println("Unexpected error occurred: " + e.getMessage());
             e.printStackTrace();
-            // Consider logging or rethrowing as a runtime exception
             throw new RuntimeException("Failed to create payment intent due to unexpected error", e);
         }
     }

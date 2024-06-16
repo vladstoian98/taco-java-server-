@@ -33,11 +33,4 @@ public class RegistrationController {
             return new ResponseEntity<>("Registration failed", HttpStatus.BAD_REQUEST);
         }
     }
-
-//    @PostMapping
-//    public String processRegistration(RegistrationForm form) {
-//        userRepository.save(form.toUser(passwordEncoder));
-//        return "redirect:/login";
-//    }
-
 }
