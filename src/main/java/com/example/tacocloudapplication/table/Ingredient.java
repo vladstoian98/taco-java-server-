@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @Entity
 @AllArgsConstructor
-@NoArgsConstructor(access= AccessLevel.PUBLIC, force = true)
+@NoArgsConstructor(access = AccessLevel.PUBLIC, force = true)
 public class Ingredient {
 
     @Id
@@ -23,7 +23,7 @@ public class Ingredient {
     private final float price;
 
     @JsonIgnore
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(joinColumns = @JoinColumn(name = "ingredient_id"),
             inverseJoinColumns = @JoinColumn(name = "taco_id"))
     private List<Taco> tacos = new ArrayList<>();
@@ -43,7 +43,6 @@ public class Ingredient {
                 ", name='" + name + '\'' +
                 ", type=" + type +
                 ", price=" + price +
-                ", tacos=" + tacos +
                 '}';
     }
 }

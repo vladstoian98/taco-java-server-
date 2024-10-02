@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/admin/users")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class UserController {
 
     private final UserDetailsService userDetailsService;

@@ -30,7 +30,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/design")
 @SessionAttributes("tacoOrder")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class DesignTacoController {
 
     private final IngredientRepository ingredientRepository;
@@ -53,7 +53,7 @@ public class DesignTacoController {
 
     @GetMapping("/taco")
     public ResponseEntity<Map<Type, List<Ingredient>>> getIngredientsGroupedByType() {
-        List<Ingredient> ingredients = ingredientRepository.findAll();
+        List<Ingredient> ingredients = ingredientRepository.findAllIngredients();
 
         if (ingredients.isEmpty()) {
             return ResponseEntity.noContent().build();
@@ -88,6 +88,8 @@ public class DesignTacoController {
             }
         }
 
+        taco.setTotalTacoPrice(roundToOneDecimal(taco.getTotalTacoPrice()));
+
         Taco savedTaco = tacoRepository.save(taco);
         entityManager.flush();
         entityManager.clear();
@@ -100,5 +102,8 @@ public class DesignTacoController {
         return ResponseEntity.ok(new Taco());
     }
 
+    private float roundToOneDecimal(float value) {
+        return Math.round(value * 10) / 10.0f;
+    }
 
 }

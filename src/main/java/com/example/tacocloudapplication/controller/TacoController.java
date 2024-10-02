@@ -12,7 +12,7 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/tacos", produces = "application/json")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class TacoController {
 
     private TacoRepository tacoRepository;

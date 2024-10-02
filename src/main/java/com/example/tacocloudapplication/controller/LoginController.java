@@ -25,7 +25,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/api")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class LoginController {
 
     private AuthenticationManager authenticationManager;

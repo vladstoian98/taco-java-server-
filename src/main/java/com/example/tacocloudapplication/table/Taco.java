@@ -28,7 +28,7 @@ public class Taco {
     private float totalTacoPrice = 0;
 
     @Size(min = 1, message = "You must choose at least 1 ingredient")
-    @ManyToMany(mappedBy = "tacos", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(mappedBy = "tacos", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.LAZY)
     private List<Ingredient> ingredients = new ArrayList<>();
 
     @JsonIgnore

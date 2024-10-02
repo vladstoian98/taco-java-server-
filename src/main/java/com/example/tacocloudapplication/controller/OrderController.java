@@ -24,7 +24,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/orders")
 @SessionAttributes("tacoOrder")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class OrderController {
 
     private final OrderRepository orderRepository;

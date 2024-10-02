@@ -13,7 +13,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequestMapping("/change")
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "https://localhost:4200")
 public class ChangeLoginDetailsController {
     private final ChangeLoginDetailsService changeLoginDetailsService;
 
